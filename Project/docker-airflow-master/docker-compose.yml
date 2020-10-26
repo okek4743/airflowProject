@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+    postgres:
+        image: postgres:9.6
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+
+    mysql:
+
+        image: mysql:5.7.27
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+        volumes:
+            - ./store_files:/store_files_mysql/
+            - ./mysql.cnf:/etc/mysql/mysql.cnf
+
+    webserver:
+        image: airflow_latest
+        restart: always
+        depends_on:
+            - postgres
+            - mysql
+        environment:
+            - INSTALL_MYSQL=y
+            - LOAD_EX=n
+            - EXECUTOR=Local
+            - AWS_ACCESS_KEY_ID=ABCFHKTHEYM
+            - AWS_SECRET_ACCESS_KEY=ABRTY/RTYUUUIHifghrY/jkltmnpol
+
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+            - ./apps:/usr/local/apps
+            - ./data:/usr/local/data
+            - ./list:/usr/local/list
+
+        ports:
+            - "8080:8080"
+            - "8085:8085" 
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+            
+    mongo:
+
+        image: mongo
+        ports:
+            - 27017:27017
+        volumes:
+            - ./mongodata:/mongodata/
+
+        container_name: mongo_db1 

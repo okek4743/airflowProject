@@ -1,0 +1,43 @@
+import requests
+import json
+import boto3
+s3 = boto3.client('s3')
+ 
+def lambda_handler(event, context):
+	bucket = 'awsbuc01'
+	response = requests.get('https://trackapi.nutritionix.com/v2/search/instant?query=apple', headers={'x-app-id':'ac4ee8b5', 'x-app-key':'4b1be3a38f2ab9650b414dd7aa7710c3'})
+	uploadbyStream = bytes(json.dumps(response.text).encode('UTF-8'))
+	filename = 'CID-111' + '.json'
+	s3.put_object(Bucket=bucket, Key=filename, Body=uploadbyStream)
+	print('Put Complete')
+	
+	
+	print(query_item)
+	app_id = recieved_value[0][1]
+	print(app_id)
+	app_key = recieved_value[0][2]
+	print(app_key)
+	response = requests.get('https://trackapi.nutritionix.com/v2/search/instant?query=+query_item+', headers={'x-app-id':app_id, 'x-app-key':app_key})
+	status_check = response.status_code
+	if status_check == 200:
+		print('connected')
+	else:
+		print('failed connection')
+		
+-------------------------------------------
+for data in list:
+			query_item = rec_value[0]
+			app_id = rec_value[1]
+			app_key = rec_value[2]
+			url = 'https://trackapi.nutritionix.com/v2/search/instant?query='
+			request_url = url + str(query_item)
+			str_app_id = str(app_id)
+			str_app_key = str(app_key)
+			response = requests.get(request_url, headers={'x-app-id':str_app_id, 'x-app-key':str_app_key})
+			status_check = response.status_code
+			if status_check == 200:
+				print(query_item)
+				print('connected')
+			else:
+				print(query_item)
+				print('failed connection') 
